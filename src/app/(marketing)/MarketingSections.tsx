@@ -347,37 +347,37 @@ export default function MarketingSections() {
       {/* ========================================= */}
       {/* FOOTER  */}
       {/* ========================================= */}
-      <footer className="relative w-full py-16">
+      <footer className="relative w-full py-16 border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2 md:col-span-2 flex flex-col gap-6">
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2 group">
                 <span className="font-extrabold text-xl tracking-wider text-white">SYNQ</span>
               </Link>
-              <p className="text-slate-400 text-sm max-w-xs">
-                The modern platform for team collaboration and real-time communication.
+              <p className="text-slate-400 text-sm max-w-xs leading-relaxed">
+                Empowering distributed teams with AI-driven real-time collaboration. Built for speed, clarity, and the future of work.
               </p>
             </div>
             <div className="flex flex-col gap-3">
               <strong className="text-white font-semibold text-sm">Product</strong>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Download</Link>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Status</Link>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-slate-400 hover:text-white text-sm transition-colors text-left">Download</button>
+              <Link href="#pricing" className="text-slate-400 hover:text-white text-sm transition-colors">Pricing</Link>
+              <Link href="#support" className="text-slate-400 hover:text-white text-sm transition-colors">Documentation</Link>
             </div>
             <div className="flex flex-col gap-3">
               <strong className="text-white font-semibold text-sm">Company</strong>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">About</Link>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Careers</Link>
+              <Link href="/about" className="text-slate-400 hover:text-white text-sm transition-colors">About Us</Link>
+              <Link href="#support" className="text-slate-400 hover:text-white text-sm transition-colors">Support</Link>
               <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Blog</Link>
             </div>
             <div className="flex flex-col gap-3">
               <strong className="text-white font-semibold text-sm">Legal</strong>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link>
-              <Link href="#" className="text-slate-400 hover:text-white text-sm transition-colors">Security</Link>
+              <Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Terms of Service</Link>
+              <Link href="/privacy" className="text-slate-400 hover:text-white text-sm transition-colors">Privacy Policy</Link>
+              <Link href="/security" className="text-slate-400 hover:text-white text-sm transition-colors">Security</Link>
             </div>
           </div>
-          <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 border-t border-white/5">
             <p className="text-slate-400 text-sm">© 2026 SYNQ. All rights reserved.</p>
             <div className="flex gap-4">
               <Link href="#" className="text-slate-500 hover:text-white transition-colors">Twitter</Link>

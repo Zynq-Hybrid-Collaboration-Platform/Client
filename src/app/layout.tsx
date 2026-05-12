@@ -4,10 +4,10 @@ import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: {
-    default: 'SYNQ | Next-Gen AI Collaboration',
+    default: 'SYNQ | Next-Gen Collaboration Platform',
     template: '%s | SYNQ'
   },
-  description: 'AI-powered workflows, real-time sync, and seamless team collaboration for distributed teams.',
+  description: 'SYNQ is the ultimate workspace for distributed teams, combining real-time chat, crystal-clear voice rooms, and powerful task management in one seamless experience.',
   keywords: ['collaboration', 'AI', 'real-time', 'sync', 'workflow', 'team', 'productivity'],
   authors: [{ name: 'SYNQ Team' }],
   creator: 'SYNQ',
@@ -26,9 +26,9 @@ export const metadata: Metadata = {
     description: 'Empower your team with AI-driven real-time sync.',
   },
   icons: {
-    icon: '/iconsynq1.svg',
-    shortcut: '/iconsynq1.svg',
-    apple: '/iconsynq1.svg',
+    icon: "/synq.svg",
+    shortcut: "/synq.svg",
+    apple: "/synq.svg",
   },
   robots: {
     index: true,
