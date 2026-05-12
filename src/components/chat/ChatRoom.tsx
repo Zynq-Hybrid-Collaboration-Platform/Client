@@ -981,13 +981,19 @@ export default function ChatRoom({ channelId, channel, workspaceMembers }: { cha
                             <div key={`${r.emoji}-${i}`} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5 group/reactitem">
                               <div className="flex items-center gap-2.5">
                                 <div 
-                                  onClick={() => openProfile(uId)}
+
+                                  onClick={() => window.dispatchEvent(new CustomEvent('open-user-profile', { detail: { userId: uId } }))}
+                         onClick={() => openProfile(uId)}
+
                                   className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-[10px] shadow-inner cursor-pointer hover:scale-110 transition-transform"
                                 >
                                   {u.avatar ? <img src={u.avatar} alt={u.name} className="w-full h-full rounded-full object-cover" /> : (u.name?.[0]?.toUpperCase() || 'U')}
                                 </div>
                                 <span 
+
+
                                   onClick={() => openProfile(uId)}
+
                                   className="text-[13px] font-medium text-slate-200 cursor-pointer hover:text-white transition-colors"
                                 >
                                   {isMyReaction ? 'You' : u.name || 'Unknown User'}
