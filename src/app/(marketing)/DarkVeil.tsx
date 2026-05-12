@@ -168,9 +168,13 @@ export default function DarkVeil({
       frame = requestAnimationFrame(loop);
     };
 
-    loop();
+    // Delay start slightly to let the main thread breathe
+    const timeout = setTimeout(() => {
+      loop();
+    }, 1500);
 
     return () => {
+      clearTimeout(timeout);
       cancelAnimationFrame(frame);
       window.removeEventListener('resize', resize);
     };
