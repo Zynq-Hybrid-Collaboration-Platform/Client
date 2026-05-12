@@ -26,9 +26,11 @@ export const metadata: Metadata = {
     description: 'Empower your team with AI-driven real-time sync.',
   },
   icons: {
-    icon: "/synq.svg",
-    shortcut: "/synq.svg",
-    apple: "/synq.svg",
+    icon: [
+      { url: "/synq.svg?v=2", type: "image/svg+xml" },
+    ],
+    shortcut: "/synq.svg?v=2",
+    apple: "/synq.svg?v=2",
   },
   robots: {
     index: true,
