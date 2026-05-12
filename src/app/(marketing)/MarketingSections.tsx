@@ -242,6 +242,96 @@ export default function MarketingSections() {
       </section>
 
       {/* ========================================= */}
+      {/* PRICING SECTION */}
+      {/* ========================================= */}
+      <section id="pricing" className="relative w-full px-6 lg:px-8 py-24 border-t border-white/5">
+        <div className="max-w-7xl mx-auto text-center mb-16">
+          <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">Simple, Transparent Pricing</h2>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">Choose the plan that's right for your team. No hidden fees, no complexity.</p>
+        </div>
+
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Free Plan */}
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col hover:bg-white/10 transition-colors">
+            <h3 className="text-xl font-bold text-white mb-2">Starter</h3>
+            <div className="text-4xl font-black text-white mb-6">$0<span className="text-lg font-medium text-slate-500">/mo</span></div>
+            <ul className="space-y-4 mb-8 text-slate-400 text-sm flex-1">
+              <li className="flex items-center gap-2">✓ Up to 5 team members</li>
+              <li className="flex items-center gap-2">✓ Unlimited chat history</li>
+              <li className="flex items-center gap-2">✓ 5GB Storage</li>
+            </ul>
+            <Link href="/login" className="w-full py-3 rounded-xl border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors text-center">Get Started</Link>
+          </div>
+
+          {/* Pro Plan */}
+          <div className="bg-indigo-600/10 border-2 border-indigo-500 rounded-3xl p-8 flex flex-col relative scale-105 shadow-[0_0_40px_-10px_rgba(99,102,241,0.3)]">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Most Popular</div>
+            <h3 className="text-xl font-bold text-white mb-2">Pro</h3>
+            <div className="text-4xl font-black text-white mb-6">$12<span className="text-lg font-medium text-slate-300">/mo</span></div>
+            <ul className="space-y-4 mb-8 text-slate-200 text-sm flex-1">
+              <li className="flex items-center gap-2">✓ Unlimited members</li>
+              <li className="flex items-center gap-2">✓ 50GB Storage</li>
+              <li className="flex items-center gap-2">✓ Advanced task management</li>
+              <li className="flex items-center gap-2">✓ Custom roles & permissions</li>
+            </ul>
+            <Link href="/login" className="w-full py-3 rounded-xl bg-white text-black font-bold hover:bg-slate-200 transition-colors text-center shadow-lg">Start Free Trial</Link>
+          </div>
+
+          {/* Enterprise Plan */}
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-8 flex flex-col hover:bg-white/10 transition-colors">
+            <h3 className="text-xl font-bold text-white mb-2">Enterprise</h3>
+            <div className="text-4xl font-black text-white mb-6">Custom</div>
+            <ul className="space-y-4 mb-8 text-slate-400 text-sm flex-1">
+              <li className="flex items-center gap-2">✓ Unlimited everything</li>
+              <li className="flex items-center gap-2">✓ Dedicated account manager</li>
+              <li className="flex items-center gap-2">✓ SSO & advanced security</li>
+              <li className="flex items-center gap-2">✓ API access</li>
+            </ul>
+            <button className="w-full py-3 rounded-xl border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors">Contact Sales</button>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================= */}
+      {/* SUPPORT / FAQ SECTION */}
+      {/* ========================================= */}
+      <section id="support" className="relative w-full px-6 lg:px-8 py-24 bg-white/[0.02]">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
+          <div className="lg:w-1/3">
+            <h2 className="text-4xl font-bold text-white mb-6">Need help?</h2>
+            <p className="text-slate-400 mb-8">Our team is here to support you 24/7. Whether you have a technical question or just want to say hi, we're all ears.</p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 text-white">
+                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-indigo-400">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <span>support@synq.app</span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <h4 className="text-white font-semibold">How do I get started?</h4>
+              <p className="text-slate-400 text-sm">Simply create an account, create a workspace, and invite your team. You'll be up and running in under 2 minutes.</p>
+            </div>
+            <div className="space-y-3">
+              <h4 className="text-white font-semibold">Is my data secure?</h4>
+              <p className="text-slate-400 text-sm">Yes. We use industry-standard AES-256 encryption for all data at rest and TLS for data in transit.</p>
+            </div>
+            <div className="space-y-3">
+              <h4 className="text-white font-semibold">Can I use it on mobile?</h4>
+              <p className="text-slate-400 text-sm">Absolutely. Our web app is fully responsive, and native apps are currently in early access.</p>
+            </div>
+            <div className="space-y-3">
+              <h4 className="text-white font-semibold">Do you have a free plan?</h4>
+              <p className="text-slate-400 text-sm">Yes, our Starter plan is free forever for small teams of up to 5 members.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========================================= */}
       {/* CTA SECTION */}
       {/* ========================================= */}
       <section className="relative w-full px-6 lg:px-8 py-24 text-white text-center">
