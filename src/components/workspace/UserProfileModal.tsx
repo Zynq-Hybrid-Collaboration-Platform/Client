@@ -37,7 +37,15 @@ export default function UserProfileModal({ isOpen, onClose, userId, workspaceId 
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isOpen) { fetchData(); setTab('profile'); setEditing(false); }
+    if (isOpen) {
+      fetchData();
+      setTab('profile');
+      setEditing(false);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
   }, [isOpen, userId, workspaceId]);
 
   const fetchData = async () => {

@@ -5,9 +5,29 @@ import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Info, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ChatRoom from '@/components/chat/ChatRoom';
-import CallRoom from '@/components/chat/CallRoom';
-import KanbanBoard from '@/components/tasks/KanbanBoard';
+import dynamic from 'next/dynamic';
+
+const ChatRoom = dynamic(() => import('@/components/chat/ChatRoom'), {
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center bg-black/50">
+      <Loader2 className="w-6 h-6 text-slate-500 animate-spin" />
+    </div>
+  ),
+  ssr: false
+});
+
+const CallRoom = dynamic(() => import('@/components/chat/CallRoom'), {
+  ssr: false
+});
+
+const KanbanBoard = dynamic(() => import('@/components/tasks/KanbanBoard'), {
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center bg-black/50">
+      <Loader2 className="w-6 h-6 text-slate-500 animate-spin" />
+    </div>
+  ),
+  ssr: false
+});
 import { useAuthStore } from '@/store/authStore';
 import { OrganizationService } from '@/lib/services/organization.service';
 import { WorkspaceService } from '@/lib/services/workspace.service';

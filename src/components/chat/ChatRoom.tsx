@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
@@ -9,7 +10,7 @@ import { Send, Image as ImageIcon, Paperclip, Smile, Hash, Edit2, Trash2, X, Che
 import { api } from "@/lib/api";
 import { MessageService } from "@/lib/services/message.service";
 import type { Message } from "@/types/chat";
-import MediaPickerPopover from "./MediaPickerPopover";
+const MediaPickerPopover = dynamic(() => import("./MediaPickerPopover"), { ssr: false });
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ChatRoom({ channelId, channel, workspaceMembers }: { channelId: string; channel?: any; workspaceMembers?: any[] }) {

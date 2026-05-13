@@ -17,12 +17,17 @@ import { api } from '@/lib/api';
 import { socketService } from '@/lib/services/socket.service';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { IUserSafe } from '@/types/auth';
-import { AddChannelMemberDropdown } from '@/components/chat/AddChannelMemberDropdown';
-import { ChannelRoleAssignmentDropdown } from '@/components/chat/ChannelRoleAssignmentDropdown';
-import InviteLinkModal from '@/components/chat/InviteLinkModal';
-import WorkspaceSettingsModal from '@/components/workspace/settings/WorkspaceSettingsModal';
-import NotificationBell from '@/components/workspace/NotificationBell';
-import UserProfileModal from '@/components/workspace/UserProfileModal';
+import dynamic from 'next/dynamic';
+
+const AddChannelMemberDropdown = dynamic(() => import('@/components/chat/AddChannelMemberDropdown').then(mod => mod.AddChannelMemberDropdown), { ssr: false });
+const ChannelRoleAssignmentDropdown = dynamic(() => import('@/components/chat/ChannelRoleAssignmentDropdown').then(mod => mod.ChannelRoleAssignmentDropdown), { ssr: false });
+const InviteLinkModal = dynamic(() => import('@/components/chat/InviteLinkModal'), { ssr: false });
+const WorkspaceSettingsModal = dynamic(() => import('@/components/workspace/settings/WorkspaceSettingsModal'), { ssr: false });
+const NotificationBell = dynamic(() => import('@/components/workspace/NotificationBell'), { 
+  loading: () => <div className="w-9 h-9 rounded-full bg-white/5 animate-pulse" />,
+  ssr: false 
+});
+const UserProfileModal = dynamic(() => import('@/components/workspace/UserProfileModal'), { ssr: false });
 import { toast } from 'sonner';
 
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {
