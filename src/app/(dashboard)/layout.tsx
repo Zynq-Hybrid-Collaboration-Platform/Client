@@ -17,12 +17,19 @@ import { api } from '@/lib/api';
 import { socketService } from '@/lib/services/socket.service';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { IUserSafe } from '@/types/auth';
-import { AddChannelMemberDropdown } from '@/components/chat/AddChannelMemberDropdown';
-import { ChannelRoleAssignmentDropdown } from '@/components/chat/ChannelRoleAssignmentDropdown';
-import InviteLinkModal from '@/components/chat/InviteLinkModal';
-import WorkspaceSettingsModal from '@/components/workspace/settings/WorkspaceSettingsModal';
-import NotificationBell from '@/components/workspace/NotificationBell';
+import dynamic from 'next/dynamic';
+
+const AddChannelMemberDropdown = dynamic(() => import('@/components/chat/AddChannelMemberDropdown').then(mod => mod.AddChannelMemberDropdown), { ssr: false });
+const ChannelRoleAssignmentDropdown = dynamic(() => import('@/components/chat/ChannelRoleAssignmentDropdown').then(mod => mod.ChannelRoleAssignmentDropdown), { ssr: false });
+const InviteLinkModal = dynamic(() => import('@/components/chat/InviteLinkModal'), { ssr: false });
+const WorkspaceSettingsModal = dynamic(() => import('@/components/workspace/settings/WorkspaceSettingsModal'), { ssr: false });
+const NotificationBell = dynamic(() => import('@/components/workspace/NotificationBell'), { 
+  loading: () => <div className="w-9 h-9 rounded-full bg-white/5 animate-pulse" />,
+  ssr: false 
+});
+const UserProfileModal = dynamic(() => import('@/components/workspace/UserProfileModal'), { ssr: false });
 import { toast } from 'sonner';
+import { WorkspaceSearchBar } from '@/components/workspace/WorkspaceSearchBar';
 
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,6 +51,8 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
   const [channelToAssignRolesId, setChannelToAssignRolesId] = React.useState<string | null>(null);
   const [isInviteLinkModalOpen, setIsInviteLinkModalOpen] = React.useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
+  const [isUserProfileModalOpen, setIsUserProfileModalOpen] = React.useState(false);
+  const [profileModalUserId, setProfileModalUserId] = React.useState<string | undefined>(undefined);
 
   // Extract workspace & channel context from URL dynamically
   const activeWorkspaceId = pathname?.split('/workspace/')[1]?.split('/')[0] || pathname?.split('/')[2];
@@ -127,7 +136,85 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
         });
       }
     });
+  }, [activeWorkspaceId]);
 
+  // 3. Real-Time Identity & Presence Synchronization
+  React.useEffect(() => {
+    // Listen for profile updates (name, avatar, bio)
+    const handleProfileUpdate = (data: any) => {
+      if (data.userId === user?.id) {
+        // Update local store if it's the current user
+        setUser({ ...user!, ...data, id: user!.id });
+      }
+      // Workspace sidebar and message list will naturally re-render or 
+      // we can trigger a re-fetch if needed.
+    };
+
+    // Listen for status changes (online/offline)
+    const handleStatusChange = (data: { userId: string, status: string }) => {
+      if (data.userId === user?.id) {
+        setUser({ ...user!, status: data.status });
+      }
+      // Other components (sidebar member list) should listen to this too
+    };
+
+    // Listen for role updates
+    const handleRoleUpdate = (data: { userId: string, role: string, workspaceId: string }) => {
+      if (data.userId === user?.id && data.workspaceId === activeWorkspaceId) {
+        setUser({
+          ...user!,
+          workspaces: user!.workspaces.map(w => 
+            w.workspaceId === data.workspaceId ? { ...w, role: data.role } : w
+          )
+        });
+        toast.info(`Your role in this workspace has been updated to ${data.role}`);
+      }
+    };
+
+    // Listen for account deletion/removal
+    const handleMemberRemoved = (data: { userId: string, workspaceId: string }) => {
+      if (data.userId === user?.id) {
+        if (data.workspaceId === activeWorkspaceId) {
+          toast.error("You have been removed from this workspace");
+          router.push('/workspace');
+        } else {
+          // Update workspaces list
+          setUser({
+            ...user!,
+            workspaces: user!.workspaces.filter(w => w.workspaceId !== data.workspaceId)
+          });
+        }
+      }
+    };
+
+    socketService.onUserProfileUpdated(handleProfileUpdate);
+    socketService.onUserStatusChanged(handleStatusChange);
+    socketService.onMemberRoleUpdated(handleRoleUpdate);
+    socketService.onMemberRemoved(handleMemberRemoved);
+
+    // 4. Custom Event Listener for opening profiles from children (ChatRoom, TaskBoard etc.)
+    const handleOpenProfileEvent = (e: any) => {
+      const { userId } = e.detail;
+      setProfileModalUserId(userId);
+      setIsUserProfileModalOpen(true);
+    };
+
+    window.addEventListener('open-user-profile', handleOpenProfileEvent);
+
+    return () => {
+      socketService.offUserProfileUpdated(handleProfileUpdate);
+      socketService.offUserStatusChanged(handleStatusChange);
+      socketService.offMemberRoleUpdated(handleRoleUpdate);
+      socketService.offMemberRemoved(handleMemberRemoved);
+      window.removeEventListener('open-user-profile', handleOpenProfileEvent);
+    };
+  }, [user, activeWorkspaceId]);
+
+  // Join workspace room for real-time presence
+  React.useEffect(() => {
+    if (activeWorkspaceId && activeWorkspaceId !== 'join' && activeWorkspaceId !== 'setup') {
+      socketService.joinWorkspace(activeWorkspaceId);
+    }
   }, [activeWorkspaceId]);
 
   const handleDeleteWorkspace = () => {
@@ -481,6 +568,18 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
         />
       )}
 
+      {/* ─── USER PROFILE MODAL ─── */}
+      <AnimatePresence>
+        {isUserProfileModalOpen && activeWorkspaceId && (
+          <UserProfileModal 
+            isOpen={isUserProfileModalOpen}
+            onClose={() => setIsUserProfileModalOpen(false)}
+            userId={profileModalUserId}
+            workspaceId={activeWorkspaceId}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ─── ROLE ASSIGNMENT DROPDOWN ─── */}
       {channelToAssignRolesId && activeOrgId && (
         <ChannelRoleAssignmentDropdown
@@ -660,12 +759,15 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
 
           <div className="flex items-center gap-5">
 
-            <div className="flex items-center bg-black/60 backdrop-blur-xl border border-white/5 rounded-full px-3 py-1.5 w-24 sm:w-48 lg:w-72 focus-within:border-indigo-500/50 focus-within:bg-[#111] focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all shadow-inner group shrink">
-              <Search className="h-4 w-4 text-slate-500 sm:mr-2 group-focus-within:text-indigo-400 transition-colors shrink-0" />
-              <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-sm text-slate-200 w-full placeholder:text-slate-600 hidden sm:block" />
-            </div>
+            <WorkspaceSearchBar workspaceId={activeWorkspaceId} channels={channels} />
             <NotificationBell />
-            <div className="flex items-center gap-3 pl-3 border-l border-white/10 cursor-pointer group">
+            <div 
+              onClick={() => {
+                setProfileModalUserId(undefined);
+                setIsUserProfileModalOpen(true);
+              }}
+              className="flex items-center gap-3 pl-3 border-l border-white/10 cursor-pointer group"
+            >
               <div className="relative">
                 {user?.avatar ? (
                   <img src={user.avatar} alt="Profile" className="w-9 h-9 rounded-full object-cover shrink-0 border-2 border-[#0a0a0a] group-hover:border-indigo-500/50 transition-all shadow-sm" />
@@ -674,7 +776,7 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
                     <span className="text-white text-sm font-bold leading-none">{user?.name ? user.name.charAt(0).toUpperCase() : "U"}</span>
                   </div>
                 )}
-                <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#000] rounded-full"></div>
+                <div className={`absolute bottom-0 right-0 w-2.5 h-2.5 ${user?.status === 'online' ? 'bg-emerald-500' : 'bg-gray-500'} border-2 border-[#000] rounded-full`}></div>
               </div>
             </div>
           </div>

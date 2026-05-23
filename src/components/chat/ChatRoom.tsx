@@ -1,4 +1,5 @@
 "use client";
+import dynamic from "next/dynamic";
 
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
@@ -9,7 +10,7 @@ import { Send, Image as ImageIcon, Paperclip, Smile, Hash, Edit2, Trash2, X, Che
 import { api } from "@/lib/api";
 import { MessageService } from "@/lib/services/message.service";
 import type { Message } from "@/types/chat";
-import MediaPickerPopover from "./MediaPickerPopover";
+const MediaPickerPopover = dynamic(() => import("./MediaPickerPopover"), { ssr: false });
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ChatRoom({ channelId, channel, workspaceMembers }: { channelId: string; channel?: any; workspaceMembers?: any[] }) {
@@ -265,9 +266,8 @@ export default function ChatRoom({ channelId, channel, workspaceMembers }: { cha
     // 3. Stop everything if the browser hasn't finished loading Local Storage yet
     if (!isMounted) return;
 
-    // Connect to the socket server using cookies
-    socketService.connect();
-    socketService.joinChannel(channelId);
+    // NOTE: socketService.connect() and joinChannel() are handled by page.tsx
+    // with the correct timing (waiting for socket.connected). Do NOT duplicate here.
 
     const newMessageCallback = (incomingData: Message) => {
       console.log("📨 New message arrived!", incomingData);
@@ -598,6 +598,11 @@ export default function ChatRoom({ channelId, channel, workspaceMembers }: { cha
             if (isMeById || forceIsMe) {
               senderName = "You";
             }
+
+            const openProfile = (uId: string) => {
+              if (!uId) return;
+              window.dispatchEvent(new CustomEvent('open-user-profile', { detail: { userId: uId } }));
+            };
             
             // If still unknown, look in workspace members
             if (!senderName || senderName === "Unknown User") {
@@ -647,13 +652,18 @@ export default function ChatRoom({ channelId, channel, workspaceMembers }: { cha
                   
                   {/* Avatar (Hidden for 'isMe') */}
                   {!isMe && (
-                    avatarUrl ? (
-                      <img src={avatarUrl} alt={senderName} className="w-8 h-8 rounded-full object-cover shrink-0 border border-[#0a0a0a] shadow-[0_2px_10px_rgba(0,0,0,0.5)] mb-1" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 border border-[#0a0a0a] shadow-[0_2px_10px_rgba(0,0,0,0.5)] mb-1">
-                        <span className="text-white text-xs font-bold">{initial}</span>
-                      </div>
-                    )
+                    <div 
+                      onClick={() => window.dispatchEvent(new CustomEvent('open-user-profile', { detail: { userId: senderIdVal || senderAltIdVal } }))}
+                      className="cursor-pointer hover:scale-110 transition-transform active:scale-95"
+                    >
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={senderName} className="w-8 h-8 rounded-full object-cover shrink-0 border border-[#0a0a0a] shadow-[0_2px_10px_rgba(0,0,0,0.5)] mb-1" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center shrink-0 border border-[#0a0a0a] shadow-[0_2px_10px_rgba(0,0,0,0.5)] mb-1">
+                          <span className="text-white text-xs font-bold">{initial}</span>
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   {/* Message Content Area */}
@@ -662,7 +672,12 @@ export default function ChatRoom({ channelId, channel, workspaceMembers }: { cha
                     {/* Name and Time (Hidden for 'isMe') */}
                     {!isMe && (
                        <div className="flex items-baseline gap-2 mb-1 px-1">
-                         <span className="text-[13px] font-bold text-slate-300 cursor-default">{senderName}</span>
+                         <span 
+                           onClick={() => window.dispatchEvent(new CustomEvent('open-user-profile', { detail: { userId: senderIdVal || senderAltIdVal } }))}
+                           className="text-[13px] font-bold text-slate-300 cursor-pointer hover:text-white transition-colors"
+                         >
+                           {senderName}
+                         </span>
                          <span className="text-[10px] font-medium text-slate-500">{timeString}</span>
                        </div>
                     )}
@@ -966,10 +981,18 @@ export default function ChatRoom({ channelId, channel, workspaceMembers }: { cha
                           return (
                             <div key={`${r.emoji}-${i}`} className="flex items-center justify-between p-2 rounded-lg hover:bg-white/5 transition-colors border border-transparent hover:border-white/5 group/reactitem">
                               <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-[10px] shadow-inner">
+                                <div 
+                                  onClick={() => window.dispatchEvent(new CustomEvent('open-user-profile', { detail: { userId: uId } }))}
+                                  className="w-7 h-7 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-[10px] shadow-inner cursor-pointer hover:scale-110 transition-transform"
+                                >
                                   {u.avatar ? <img src={u.avatar} alt={u.name} className="w-full h-full rounded-full object-cover" /> : (u.name?.[0]?.toUpperCase() || 'U')}
                                 </div>
-                                <span className="text-[13px] font-medium text-slate-200">{isMyReaction ? 'You' : u.name || 'Unknown User'}</span>
+                                 <span
+                                  onClick={() => window.dispatchEvent(new CustomEvent('open-user-profile', { detail: { userId: uId } }))}
+                                  className="text-[13px] font-medium text-slate-200 cursor-pointer hover:text-white transition-colors"
+                                >
+                                  {isMyReaction ? 'You' : u.name || 'Unknown User'}
+                                </span>
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <span className="text-sm bg-white/5 w-7 h-7 flex items-center justify-center rounded-full shadow-sm border border-white/5">{r.emoji}</span>

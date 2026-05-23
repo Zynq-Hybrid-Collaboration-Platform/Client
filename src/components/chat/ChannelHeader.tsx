@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hash, Video, Phone, Settings2, UserPlus, Shield, Trash2 } from 'lucide-react';
+import { Hash, Video, Phone, UserPlus, Shield, Trash2 } from 'lucide-react';
 import { socketService } from '@/lib/services/socket.service';
 
 interface ChannelHeaderProps {
@@ -119,9 +119,6 @@ export function ChannelHeader({
             <span className="text-emerald-400 flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" /> Call Active</span>
           </div>
         ) : null}
-        
-        <div className="w-px h-6 bg-white/10 ml-2" />
-        <button className="p-1.5 text-slate-400 hover:text-white transition-colors" title="Channel Settings"><Settings2 className="w-4 h-4" /></button>
       </div>
     </div>
   );

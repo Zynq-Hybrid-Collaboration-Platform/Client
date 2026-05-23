@@ -3,8 +3,46 @@ import './globals.css'; // MUST BE IMPORTED for Tailwind to work
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
-  title: 'SYNQ | Next-Gen Collaboration',
-  description: 'AI-powered workflows and real-time sync.',
+  title: {
+    default: 'SYNQ | Next-Gen Collaboration Platform',
+    template: '%s | SYNQ'
+  },
+  description: 'SYNQ is the ultimate workspace for distributed teams, combining real-time chat, crystal-clear voice rooms, and powerful task management in one seamless experience.',
+  keywords: ['collaboration', 'AI', 'real-time', 'sync', 'workflow', 'team', 'productivity'],
+  authors: [{ name: 'SYNQ Team' }],
+  creator: 'SYNQ',
+  metadataBase: new URL('https://synq1.vercel.app'),
+  openGraph: {
+    title: 'SYNQ | Next-Gen AI Collaboration',
+    description: 'Empower your team with AI-driven real-time sync.',
+    url: 'https://synq1.vercel.app',
+    siteName: 'SYNQ',
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SYNQ | Next-Gen AI Collaboration',
+    description: 'Empower your team with AI-driven real-time sync.',
+  },
+  icons: {
+    icon: [
+      { url: "/synq.svg?v=2", type: "image/svg+xml" },
+    ],
+    shortcut: "/synq.svg?v=2",
+    apple: "/synq.svg?v=2",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -12,8 +50,28 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    'name': 'SYNQ',
+    'operatingSystem': 'Web, Windows, macOS, Linux',
+    'applicationCategory': 'CollaborationSoftware',
+    'offers': {
+      '@type': 'Offer',
+      'price': '0',
+      'priceCurrency': 'USD'
+    },
+    'description': 'Next-gen AI-powered collaboration platform for distributed teams.'
+  };
+
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         {children}
         <Toaster 

@@ -1,4 +1,15 @@
 import React from 'react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Next-Gen Collaboration for Modern Teams',
+  description: 'Experience the future of work with AI-powered workflows and real-time synchronization. Built for speed, clarity, and distributed teams.',
+  openGraph: {
+    title: 'SYNQ | Next-Gen AI Collaboration',
+    description: 'Empower your team with AI-driven real-time sync.',
+    images: [{ url: '/og-image.png' }],
+  }
+};
 
 export default function MarketingLayout({
   children,

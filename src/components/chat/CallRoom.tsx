@@ -14,7 +14,7 @@ export default function CallRoom({ channelId, isAudioOnly, channel, workspaceMem
   const user = useAuthStore((state) => state.user);
   const params = useParams();
   const workspaceId = params?.workspaceId as string;
-  const isPrivileged = user?.organizations?.some(org => org.role === 'admin' || org.role === 'owner') ||
+  const isPrivileged = (channel?.organizationId && user?.organizations?.some(org => String(org.orgId) === String(channel.organizationId) && (org.role === 'admin' || org.role === 'owner'))) ||
     user?.workspaces?.some((w: any) => (w.workspaceId === workspaceId || w._id === workspaceId) && (w.role === 'admin' || w.role === 'owner'));
 
   

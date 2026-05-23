@@ -7,9 +7,11 @@ import { useNotificationStore } from '@/store/notificationStore';
 import { socketService } from '@/lib/services/socket.service';
 import { INotification, NotificationType } from '@/types/notification.types';
 import { formatDistanceToNow } from 'date-fns';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export default function NotificationBell() {
+    const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     
@@ -61,11 +63,34 @@ export default function NotificationBell() {
             markAsRead(notification._id);
         }
         setIsOpen(false);
-        // Optionally navigate based on notification type and metadata
-        // For example:
-        // if (notification.type === NotificationType.MENTION && notification.metadata?.channelId) {
-        //     router.push(`/workspace/.../channel/${notification.metadata.channelId}`);
-        // }
+
+        const { type, metadata } = notification;
+        const workspaceId = metadata?.workspaceId;
+
+        // Skip redirection if no workspace context or if it's a deletion message
+        if (!workspaceId || notification.message.toLowerCase().includes('deleted') || notification.message.toLowerCase().includes('removed')) {
+            return;
+        }
+
+        switch (type) {
+            case NotificationType.TASK:
+                router.push(`/workspace/${workspaceId}/kanban`);
+                break;
+            case NotificationType.MESSAGE:
+            case NotificationType.MENTION:
+            case NotificationType.CHANNEL:
+                if (metadata?.channelId) {
+                    router.push(`/workspace/${workspaceId}/chat/${metadata.channelId}`);
+                } else {
+                    router.push(`/workspace/${workspaceId}/chat`);
+                }
+                break;
+            case NotificationType.WORKSPACE:
+                router.push(`/workspace/${workspaceId}`);
+                break;
+            default:
+                break;
+        }
     };
 
     return (

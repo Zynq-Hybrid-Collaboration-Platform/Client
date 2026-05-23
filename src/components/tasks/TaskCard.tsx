@@ -170,17 +170,30 @@ export default function TaskCard({ task, onEdit }: TaskCardProps) {
 
           <div className="flex -space-x-2">
             {task.assignees && task.assignees.length > 0 ? (
-              task.assignees.slice(0, 3).map((assignee: any, idx: number) => (
-                <div key={idx} className="w-7 h-7 rounded-full border-2 border-[#0c0c0e] overflow-hidden bg-[#18181b] flex items-center justify-center relative shrink-0 shadow-sm" title={assignee.name}>
-                  {assignee.avatar ? (
-                    <img src={assignee.avatar} alt={assignee.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-[10px] font-bold text-white uppercase">
-                      {assignee.name ? assignee.name.charAt(0) : 'U'}
-                    </span>
-                  )}
-                </div>
-              ))
+              task.assignees.slice(0, 3).map((assignee: any, idx: number) => {
+                const assigneeId = assignee._id || assignee.id || assignee.userId;
+                return (
+                  <div 
+                    key={idx} 
+                    onPointerDown={(e) => {
+                      if (assigneeId) {
+                        e.stopPropagation();
+                        window.dispatchEvent(new CustomEvent('open-user-profile', { detail: { userId: assigneeId } }));
+                      }
+                    }}
+                    className="w-7 h-7 rounded-full border-2 border-[#0c0c0e] overflow-hidden bg-[#18181b] flex items-center justify-center relative shrink-0 shadow-sm cursor-pointer hover:scale-110 transition-transform hover:z-10" 
+                    title={assignee.name}
+                  >
+                    {assignee.avatar ? (
+                      <img src={assignee.avatar} alt={assignee.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-[10px] font-bold text-white uppercase">
+                        {assignee.name ? assignee.name.charAt(0) : 'U'}
+                      </span>
+                    )}
+                  </div>
+                );
+              })
             ) : (
               <button 
                 onPointerDown={(e) => { e.stopPropagation(); onEdit && onEdit(); }}

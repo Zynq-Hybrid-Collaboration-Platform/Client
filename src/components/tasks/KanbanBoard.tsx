@@ -30,7 +30,8 @@ export default function KanbanBoard({ channelId, isPrivileged }: { channelId: st
     }
     fetchTasks(channelId);
 
-    socketService.connect();
+    // NOTE: socketService.connect() is handled by page.tsx with correct timing.
+    // The socket registry automatically re-registers these listeners after reconnect.
 
     const handleTaskCreated = (data: { task: ITask }) => {
       const taskChannelId = typeof data.task.channelId === 'string' 

@@ -5,9 +5,29 @@ import { useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import { Info, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import ChatRoom from '@/components/chat/ChatRoom';
-import CallRoom from '@/components/chat/CallRoom';
-import KanbanBoard from '@/components/tasks/KanbanBoard';
+import dynamic from 'next/dynamic';
+
+const ChatRoom = dynamic(() => import('@/components/chat/ChatRoom'), {
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center bg-black/50">
+      <Loader2 className="w-6 h-6 text-slate-500 animate-spin" />
+    </div>
+  ),
+  ssr: false
+});
+
+const CallRoom = dynamic(() => import('@/components/chat/CallRoom'), {
+  ssr: false
+});
+
+const KanbanBoard = dynamic(() => import('@/components/tasks/KanbanBoard'), {
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center bg-black/50">
+      <Loader2 className="w-6 h-6 text-slate-500 animate-spin" />
+    </div>
+  ),
+  ssr: false
+});
 import { useAuthStore } from '@/store/authStore';
 import { OrganizationService } from '@/lib/services/organization.service';
 import { WorkspaceService } from '@/lib/services/workspace.service';
@@ -86,11 +106,34 @@ export default function ChannelPage() {
   }, [channelId]);
 
   // Ensure socket is connected globally for this channel
+  // CRITICAL FIX: joinChannel must happen AFTER socket is confirmed connected.
+  // In production, connect() is async — emitting join-channel before the
+  // handshake completes causes the event to be silently dropped on the server.
+  // Also join workspace room — backend now emits status/task events to workspace_${id}
   React.useEffect(() => {
     if (typeof window === 'undefined') return;
-    socketService.connect();
-    socketService.joinChannel(channelId as string);
-  }, [channelId]);
+    const socket = socketService.connect();
+
+    const doJoin = () => {
+      socketService.joinChannel(channelId as string);
+      // Join workspace room for Kanban statuses and task events
+      if (workspaceId) {
+        socketService.joinWorkspace(workspaceId as string);
+      }
+    };
+
+    if (socket.connected) {
+      // Already connected (e.g. navigating between channels)
+      doJoin();
+    } else {
+      // Wait for the connection handshake to complete first
+      socket.once('connect', doJoin);
+    }
+
+    return () => {
+      socket.off('connect', doJoin);
+    };
+  }, [channelId, workspaceId]);
 
   React.useEffect(() => {
     const fetchChannelData = async () => {
