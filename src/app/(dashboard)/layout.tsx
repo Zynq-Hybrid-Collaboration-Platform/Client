@@ -29,6 +29,7 @@ const NotificationBell = dynamic(() => import('@/components/workspace/Notificati
 });
 const UserProfileModal = dynamic(() => import('@/components/workspace/UserProfileModal'), { ssr: false });
 import { toast } from 'sonner';
+import { WorkspaceSearchBar } from '@/components/workspace/WorkspaceSearchBar';
 
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -758,10 +759,7 @@ export default function WorkspaceLayout({ children }: { children: React.ReactNod
 
           <div className="flex items-center gap-5">
 
-            <div className="flex items-center bg-black/60 backdrop-blur-xl border border-white/5 rounded-full px-3 py-1.5 w-24 sm:w-48 lg:w-72 focus-within:border-indigo-500/50 focus-within:bg-[#111] focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all shadow-inner group shrink">
-              <Search className="h-4 w-4 text-slate-500 sm:mr-2 group-focus-within:text-indigo-400 transition-colors shrink-0" />
-              <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-sm text-slate-200 w-full placeholder:text-slate-600 hidden sm:block" />
-            </div>
+            <WorkspaceSearchBar workspaceId={activeWorkspaceId} channels={channels} />
             <NotificationBell />
             <div 
               onClick={() => {
